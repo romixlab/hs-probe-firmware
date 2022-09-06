@@ -82,6 +82,7 @@ fn main() -> ! {
         spi1_clk: gpiob.pin(3),
         spi1_miso: gpiob.pin(4),
         spi1_mosi: gpiob.pin(5),
+        swd_dir: gpioe.pin(4),
         spi2_clk: gpioi.pin(1),
         spi2_miso: gpioi.pin(2),
         spi2_mosi: gpioi.pin(3),

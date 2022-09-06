@@ -425,6 +425,7 @@ pub struct Pins<'a> {
     pub spi1_clk: Pin<'a>, // Physically connected to SPI2_CLK
     pub spi1_miso: Pin<'a>,
     pub spi1_mosi: Pin<'a>,
+    pub swd_dir: Pin<'a>,
 
     // SPI pins for JTAG, disabled in SWD mode
     pub spi2_clk: Pin<'a>, // Physically connected to SPI1_CLK
@@ -511,6 +512,13 @@ impl<'a> Pins<'a> {
             .set_ospeed_veryhigh()
             .set_mode_input();
 
+        // SWD direction pin for isolated probes. High = probe drives, Low = target drives the bus.
+        self.swd_dir
+            .set_high()
+            .set_otype_pushpull()
+            .set_ospeed_veryhigh()
+            .set_mode_output();
+
         // Push-pull output to SPI2_CLK. Starts high-impedance.
         self.spi2_clk
             .set_af(5)
@@ -589,18 +597,21 @@ impl<'a> Pins<'a> {
     #[inline]
     pub fn swd_rx(&self) {
         self.spi1_mosi.set_mode_input();
+        self.swd_dir.set_low();
     }
 
     /// Connect SPI1_MOSI to SWDIO, SPI drives the bus
     #[inline]
     pub fn swd_tx(&self) {
         self.spi1_mosi.set_mode_alternate();
+        self.swd_dir.set_high();
     }
 
     /// Connect SPI1_MOSI to SWDIO, manual bitbanging
     #[inline]
     pub fn swd_tx_direct(&self) {
         self.spi1_mosi.set_mode_output();
+        self.swd_dir.set_high();
     }
 
     /// Swap SPI1_CLK pin to direct output mode for manual driving
